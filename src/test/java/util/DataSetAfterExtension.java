@@ -20,7 +20,6 @@ public class DataSetAfterExtension implements AfterTestExecutionCallback {
             String yamlFilePath = "dataset/" + methodName + ".yml";
 
             loadAndValidateYamlDataSet(loadYamlDataSet(yamlFilePath));
-
         }
     }
 

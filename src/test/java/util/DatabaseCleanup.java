@@ -1,11 +1,15 @@
 package util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 
 public class DatabaseCleanup {
     public static void clearDatabase() {
+        Logger logger = LoggerFactory.getLogger(DatabaseCleanup.class);
         String url = "jdbc:postgresql://localhost:5432/postgres_db?currentSchema=main";
         String user = "postgres";
         String password = "postgres";
@@ -17,13 +21,18 @@ public class DatabaseCleanup {
 
             stmt.execute("SET session_replication_role = 'replica';");
 
-            stmt.execute("TRUNCATE TABLE invoice, customer RESTART IDENTITY CASCADE;");
+            stmt.execute("TRUNCATE TABLE " +
+                    "invoice_hist," +
+                    "customer_hist," +
+                    "invoice, " +
+                    "customer" +
+                    " RESTART IDENTITY CASCADE;");
 
             conn.commit();
 
             stmt.execute("SET session_replication_role = 'origin';");
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Erro ao apagar banco." + e.getMessage());
         }
     }
 }

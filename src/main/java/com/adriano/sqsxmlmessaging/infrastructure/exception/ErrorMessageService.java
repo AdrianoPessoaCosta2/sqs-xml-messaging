@@ -9,19 +9,19 @@ import java.util.Properties;
 public class ErrorMessageService {
     private Properties errorMessages;
 
-    public ErrorMessageService(String errorFile) {
+    public ErrorMessageService(String errorFile) throws ErrorMessagesLoadException {
         loadErrorMessages(errorFile);
     }
 
-    private void loadErrorMessages(String errorFile) {
+    private void loadErrorMessages(String errorFile) throws ErrorMessagesLoadException{
         errorMessages = new Properties();
         try (InputStream input = getClass().getClassLoader().getResourceAsStream(errorFile)) {
             if (input == null) {
-                throw new IllegalArgumentException("Desculpe, não foi possível encontrar o arquivo de configuração de erros.");
+                throw new ErrorMessagesLoadException("Desculpe, não foi possível encontrar o arquivo de configuração de erros.");
             }
             errorMessages.load(input);
         } catch (IOException ex) {
-            throw new RuntimeException("Erro ao carregar o arquivo de configuração de erros.", ex);
+            throw new ErrorMessagesLoadException("Erro ao carregar o arquivo de configuração de erros.", ex);
         }
     }
 

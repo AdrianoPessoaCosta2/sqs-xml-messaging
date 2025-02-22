@@ -4,10 +4,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sqs.SqsClient;
+import software.amazon.awssdk.services.sqs.model.PurgeQueueRequest;
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 import util.DataSetAfter;
 import util.DataSetAfterExtension;
@@ -22,28 +26,32 @@ import java.util.stream.Collectors;
 
 @ExtendWith(DataSetAfterExtension.class)
 class CustomerRegistrationHandlerIt {
+    private static final Logger logger = LoggerFactory.getLogger(CustomerRegistrationHandlerIt.class);
+    private static final String queueUrl = "https://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/main-queue";
+    private static final URI uri = URI.create("https://sqs.us-east-1.localhost.localstack.cloud:4566");
+    @Autowired
+    SqsClient sqsClient;
 
     @BeforeEach
-    void initTest() throws Exception {
+    void initTest() {
         DatabaseCleanup.clearDatabase();
     }
 
     @AfterEach
-    void afterTest() throws Exception {
-//        DataSetAfterExtension.loadAndValidateYamlDataSet("dataset/success.yml");
-
+    void endTest() {
+        sqsClient.purgeQueue(PurgeQueueRequest.builder().queueUrl(queueUrl).build());
     }
 
     @Test
     @DataSetAfter
     void success() {
-        SqsClient sqsClient = SqsClient.builder()
+        sqsClient = SqsClient.builder()
                 .region(Region.US_EAST_1)
-                .endpointOverride(URI.create("https://sqs.us-east-1.localhost.localstack.cloud:4566")) // URL correta do LocalStack
+                .endpointOverride(uri)
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create("test", "test")))
                 .build();
-        String queueUrl = "https://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/main-queue";
+
 
         SendMessageRequest sendMsgRequest = SendMessageRequest.builder()
                 .queueUrl(queueUrl)
@@ -56,13 +64,14 @@ class CustomerRegistrationHandlerIt {
     private static String loadResourceFile(String fileName) {
         try (InputStream inputStream = CustomerRegistrationHandlerIt.class.getClassLoader().getResourceAsStream("xml/" + fileName)) {
             if (inputStream == null) {
-                return null;
+                logger.error("Arquivo não encontrado: {}", fileName);
+                return "Arquivo não encontrado: " + fileName;
             }
             return new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
                     .lines().collect(Collectors.joining("\n"));
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            logger.error("Erro ao carregar o arquivo: {}", fileName, e);
+            return "Erro ao carregar o arquivo: " + fileName;
         }
     }
 }
