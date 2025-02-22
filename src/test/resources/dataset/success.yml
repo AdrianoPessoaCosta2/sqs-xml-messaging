@@ -1,0 +1,14 @@
+customer:
+  - customer_identifier: 77
+    name: "Name Test1"
+    type_customer: "R"
+invoice:
+  - customer_id: 1
+    transaction_id: 202501050000005
+    type_invoice: "O"
+  - customer_id: 1
+    transaction_id: 202501050000005
+    type_invoice: "B"
+  - customer_id: 1
+    transaction_id: 202501050000006
+    type_invoice: "B"

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Invoices>
+    <Invoice>
+        <Customer_identifier>77</Customer_identifier>
+        <Transaction_id>2025010500005</Transaction_id>
+        <TypeInvoice>O</TypeInvoice>
+        <Amount>456.87</Amount>
+    </Invoice>
+    <Invoice>
+        <Customer_identifier>77</Customer_identifier>
+        <Transaction_id>2025010500005</Transaction_id>
+        <TypeInvoice>B</TypeInvoice>
+        <Amount>3</Amount>
+    </Invoice>
+    <Invoice>
+        <Customer_identifier>77</Customer_identifier>
+        <Transaction_id>2025010500006</Transaction_id>
+        <TypeInvoice>B</TypeInvoice>
+        <Amount>3</Amount>
+    </Invoice>
+</Invoices>

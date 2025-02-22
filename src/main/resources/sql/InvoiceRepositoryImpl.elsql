@@ -1,0 +1,12 @@
+@NAME(SaveAll)
+    INSERT INTO main.invoice (
+        customer_id,
+        transaction_id,
+        type_invoice,
+        amount
+    ) VALUES (
+        :customer_id,
+        :transaction_id,
+        :type_invoice,
+        :amount
+    )

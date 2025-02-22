@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  localstack:
+    image: localstack/localstack
+    container_name: aws-sqs-xml-localstack
+    environment:
+      - SERVICES=sqs
+      - AWS_DEFAULT_REGION=us-east-1
+      - EDGE_PORT=4566
+      - AWS_ACCESS_KEY_ID=fakeaccesskey
+      - AWS_SECRET_ACCESS_KEY=fakesecretkey
+    ports:
+      - '4566-4597:4566-4597'
+    volumes:
+      - "./localstack/init-sqs.sh:/etc/localstack/init/ready.d/init-sqs.sh"
+      - "./localstack/data:/var/lib/localstack"
+    networks:
+      - aws-sqs-xml-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:latest
+    container_name: aws-sqs-xml-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres_db
+    ports:
+      - '5432:5432'
+    volumes:
+      - "./postgres/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql"
+      - "./postgres/pgdata:/var/lib/postgresql/data"
+    networks:
+      - aws-sqs-xml-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+networks:
+  aws-sqs-xml-network:
+    driver: bridge

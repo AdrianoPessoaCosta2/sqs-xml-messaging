@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Customer>
+    <Customer_identifier>77</Customer_identifier>
+    <Name>Name Test1</Name>
+    <TypeCustomer>R</TypeCustomer>
+    <ReferenceDate>2023-01-31T15:45:01</ReferenceDate>
+</Customer>

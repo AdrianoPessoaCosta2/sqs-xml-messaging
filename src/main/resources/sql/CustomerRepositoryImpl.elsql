@@ -1,0 +1,32 @@
+@NAME(Save)
+    INSERT INTO main.customer(
+        customer_identifier,
+        name,
+        type_customer,
+        reference_date
+    ) VALUES (
+        :customer_identifier,
+        :name,
+        :type_customer,
+        :reference_date
+    )
+    RETURNING customer_id;
+
+@NAME(FindByCustomerId)
+    SELECT
+        customer_id,
+        customer_identifier,
+        name,
+        type_custome,
+        reference_date
+     FROM main.customer
+     WHERE id = :customer_id
+
+@NAME(IsCustomers)
+    SELECT (COUNT(*) = :size) AS ALL_EXIST
+    FROM main.customer
+    WHERE customer_identifier IN (:customer_identifier)
+
+@NAME(FindIdByCustomerIdentifier)
+    SELECT customer_id FROM main.customer
+    WHERE customer_identifier = :customer_identifier
