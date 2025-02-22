@@ -1,5 +1,6 @@
 package util;
 
+import exception.DatabaseConnectionException;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
@@ -12,24 +13,22 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DbUnitConfig {
-    public static IDatabaseConnection getDatabaseConnection() throws SQLException {
+    public static IDatabaseConnection getDatabaseConnection() throws DatabaseConnectionException {
         String url = "jdbc:postgresql://localhost:5432/postgres_db?currentSchema=main";
         String user = "postgres";
         String password = "postgres";
-
-        Connection connection = DriverManager.getConnection(url, user, password);
-
-        IDatabaseConnection dbUnitConnection = null;
         try {
-            dbUnitConnection = new DatabaseConnection(connection);
-        } catch (DatabaseUnitException e) {
-            throw new RuntimeException(e);
+            Connection connection = DriverManager.getConnection(url, user, password);
+
+            IDatabaseConnection dbUnitConnection = new DatabaseConnection(connection);
+
+            DatabaseConfig config = dbUnitConnection.getConfig();
+            IDataTypeFactory dataTypeFactory = new PostgresqlDataTypeFactory();
+            config.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, dataTypeFactory);
+
+            return dbUnitConnection;
+        } catch (SQLException | DatabaseUnitException e) {
+            throw new DatabaseConnectionException("Erro ao conectar ao banco de dados", e);
         }
-
-        DatabaseConfig config = dbUnitConnection.getConfig();
-        IDataTypeFactory dataTypeFactory = new PostgresqlDataTypeFactory();
-        config.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, dataTypeFactory);
-
-        return dbUnitConnection;
     }
 }
