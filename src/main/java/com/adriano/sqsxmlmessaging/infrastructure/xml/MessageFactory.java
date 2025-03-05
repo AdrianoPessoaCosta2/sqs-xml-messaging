@@ -55,14 +55,10 @@ public class MessageFactory {
             handler.handle((T) message);
 
         } catch (MessageProcessingException e) {
-            logger.error("Erro no processamento da mensagem: Código de erro: {}", e.getErrorCode());
-            throw e;
-        } catch (Exception e) {
             logger.error("Erro inesperado no processamento da mensagem", e);
             throw new MessageProcessingException(
                     errorMessageService.getErrorMessage(UNEXPECTED_ERROR),
-                    UNEXPECTED_ERROR.getCode()
-            );
+                    UNEXPECTED_ERROR.getCode());
         }
     }
 }
